@@ -1,8 +1,10 @@
 <?php
-session_start();
-if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset($_SESSION['driver_name']) && isset($_SESSION['home_address'])) {
-?>
-
+//  if (!isset($_SESSION['registration_username'])) {
+//     session_start();
+//    // Redirect to the login page
+//    header("Location: index.php");
+//    exit();
+ //}?>
 
 <!DOCTYPE html>
 <html>
@@ -142,10 +144,5 @@ if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset(
 </body>
 
 </html>
-<?php
-}else{ 
-	header("Location: login.php");
-	exit();
-}
-?>
+
 

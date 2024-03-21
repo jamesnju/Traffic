@@ -1,6 +1,13 @@
+
 <?php
-session_start();
-if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: login.php");
+      exit();
+  }
+
 ?>
 
 
@@ -120,7 +127,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 					<?php
 					   include "../connection.php";
 					   $sql = "SELECT * FROM tpo";
-					   $result = mysqli_query($conn, $sql);  		
+					   $result = mysqli_query($con, $sql);  		
 					?>
 					
                     <div class="card-body">
@@ -379,11 +386,4 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 
 </html>
 <?php
- mysqli_close($conn);
-?>
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
+ mysqli_close($con);

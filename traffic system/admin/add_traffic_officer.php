@@ -3,7 +3,7 @@
     session_start();
     if (!isset($_SESSION['registration_username'])) {
       // Redirect to the login page
-      header("Location: login.php");
+      header("Location: index.php");
       exit();
   }
 
@@ -139,7 +139,7 @@
 				<!--Add driver form includes goes here-->
 				<div class="card mb-4">
 					<div class="card-body p-lg-5">
-						<form action="add_traffic_officer_action" method="POST">
+						<form action="add_traffic_officer_action.php" method="POST">
 							<div class="form-row">
 								<div class="form-group col-md-6">
 									<label for="officer_id">Traffic Officer ID</label>

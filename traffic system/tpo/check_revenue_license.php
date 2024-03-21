@@ -1,11 +1,11 @@
 <?php
-session_start();
-if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset($_SESSION['officer_name']) && isset($_SESSION['police_station'])) {
-
-?>
-
-
-<?php
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
 
 
 include "../connection.php";
@@ -219,10 +219,4 @@ if (isset($_POST['search']))
 
 </html>
 
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
 

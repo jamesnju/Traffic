@@ -14,7 +14,7 @@
 		$output = "not updated";	  
       }
 	  
-	  if(mysqli_query($conn, $query))  
+	  if(mysqli_query($con, $query))  
       {  }
 	  /*
            $output_del .= '<label class="alert alert-success">' . $message . '</label>';  

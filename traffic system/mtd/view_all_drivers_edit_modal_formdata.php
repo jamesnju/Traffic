@@ -4,7 +4,7 @@
  if(isset($_POST["did"]))  
  {  
       $query = "SELECT * FROM driver WHERE license_id = '".$_POST["did"]."'";  
-      $result = mysqli_query($conn, $query);  
+      $result = mysqli_query($con, $query);  
       $row = mysqli_fetch_array($result);  
       echo json_encode($row);   
  }  

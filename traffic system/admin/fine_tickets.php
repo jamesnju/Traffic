@@ -1,8 +1,13 @@
 <?php
-session_start();
-if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
-?>
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
 
+?>
 
 
 
@@ -141,24 +146,24 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
                 <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="section_of_act">Provision ID</label>
-                    <input type="text" class="form-control" id="fine_id" value="<?php echo (isset($_GET['fine_tickets_id']))? $_GET['fine_tickets_fine_id'] : ''; ?>" name="fineid" placeholder="Provision ID">
+                    <input type="text" class="form-control" id="fine_id" value="" name="fineid" placeholder="Provision ID">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="section_of_act">Section of Act</label>
-                    <input type="text" class="form-control" id="section_of_act" value="<?php echo (isset($_GET['fine_tickets_section_of_act']))? $_GET['fine_tickets_section_of_act'] : ''; ?>" name="sectionofact" placeholder="Section of Act">
+                    <input type="text" class="form-control" id="section_of_act" value="" name="sectionofact" placeholder="Section of Act">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="provision">Provision</label>
-                    <input type="text" class="form-control" id="provision" value="<?php echo (isset($_GET['fine_tickets_provision']))? $_GET['fine_tickets_provision'] : ''; ?>" name="provision" placeholder="Provision">
+                    <input type="text" class="form-control" id="provision" value="" name="provision" placeholder="Provision">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="fine_amount">Fine Amount</label>
-                    <input type="number" class="form-control" id="fine_amount" value="<?php echo (isset($_GET['fine_tickets_amount']))? $_GET['fine_tickets_amount'] : ''; ?>" name="fineamount" placeholder="Fine Amount">
+                    <input type="number" class="form-control" id="fine_amount" value="" name="fineamount" placeholder="Fine Amount">
                 </div>
                 
             </div>
 
-            <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add Fine Ticket</button>
+            <button type="submit" class="btn btn-primary" name='addfine'><i class="fas fa-plus-circle"></i> Add Fine Ticket</button>
         </form>
     </div>
 </div>  
@@ -210,7 +215,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 								<tbody>
 									<?php //Read officer details from tpo table
 									include "../connection.php";		
-									$sql=mysqli_query($conn,"select * from fine_tickets");
+									$sql=mysqli_query($con,"select * from fine_tickets");
 									while($res=mysqli_fetch_assoc($sql))
 									{		
 									?>
@@ -459,13 +464,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 </html>
 
 <?php
- mysqli_close($conn);
+ mysqli_close($con);
 ?>
 
 
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>

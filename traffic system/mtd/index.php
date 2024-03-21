@@ -1,3 +1,43 @@
+<?php
+    include('../connection.php');
+    session_start();
+
+
+    if(isset($_POST['login'])){
+        $email = $_POST['registration_email']; 
+        $password = $_POST['registration_password'];
+
+        $fetch_query = "SELECT * FROM `registration` WHERE registration_email='$email'";
+        $result_query = mysqli_query($con, $fetch_query);
+        $row_count = mysqli_num_rows($result_query);
+
+        if($row_count > 0){
+            $data = mysqli_fetch_assoc($result_query);
+            $_SESSION['registration_username'] = $data['registration_username'];
+            if(password_verify($password, $data['registration_password'])){
+                if ($data['registration_role'] == 'admin') {
+                    // Redirect admin to admin page
+                    // header("Location: ../admin/dashboard.php");
+                    // echo "<script>window.open('../admin/index.php','_self')</script>";
+                } else if($data['registration_role']=='mtd'){
+                    // Redirect student to student page
+                    header("Location: dashboard.php");
+                    // echo "<script>window.open('../student/index.php','_self')</script>";
+                } else if($data['registration_role']=='driver'){
+                    // Redirect other users to general user page
+                    // header("Location: ../user/dashboard.php");
+
+                    // echo "<script>window.open('../index.php','_self')</script>";
+                }
+            }
+            else{
+                echo "<script>alert('Wrong email or password')</script>";
+            }
+        } else {
+            echo "<script>alert('User not found')</script>";
+        }
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,16 +90,22 @@
 					</div>
 				<?php } ?>
 
-                        <form class="form-signin" action="login_action" method="POST">
+                <form class="form-signin" action="" method="POST">
                             <div class="form-label-group">
-                                <input type="email" id="inputEmail" name="mtd_email" class="form-control" placeholder="Email address">
+                                <!-- <input type="email" id="inputEmail" name="admin_email" class="form-control" placeholder="Email address"> -->
+                                <input type="email" placeholder="Enter email" name="registration_email" class="form-control" required>
+
                             </div>
                             <div class="form-label-group">
-                                <input type="password" id="inputPassword" name="mtd_password" class="form-control" placeholder="Password">
+                                <!-- <input type="password" id="inputPassword" name="admin_password" class="form-control" placeholder="Password"> -->
+                                <input type="password" name="registration_password" class="form-control" placeholder="Enter password" required>
+
                             </div>
-                            <button class="btn btn-lg btn-block text-uppercase" type="submit">Log in</button>
+                            <!-- <button class="btn btn-lg btn-block text-uppercase" type="submit">Log in</button> -->
+                            <button class="btn btn-lg btn-block text-uppercase" type="submit" name="login">Log in</button>
+
                             <hr class="my-4">
-                            <h6 style="text-align: center; text-decoration: none;"><span><span class="ml-2"><a href="../gov.php"><i class="fas fa-home"></i> Home</a></span></h6>
+                            </span> <span class="ml-2"><a href="../gov.php"><i class="fas fa-home"></i> Home</a></span></h6>
                         </form>
                     </div>
                 </div>

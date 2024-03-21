@@ -1,8 +1,13 @@
 <?php
-session_start();
-if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
-?>
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
 
+?>
 
 
 
@@ -20,14 +25,14 @@ include "../connection.php";
 		}
 		else {
 			$sql = "SELECT * FROM mtd WHERE mtd_email='$changeemail' ";
-			$result = mysqli_query($conn, $sql);
+			$result = mysqli_query($con, $sql);
 
 			if (mysqli_num_rows($result) > 0) {
 				header("Location: mtd_account.php?error=You entered old MTD email; Nothing to change.");
 				exit();
 			}
 			else {
-				mysqli_query($conn,"update mtd set mtd_email='$changeemail' ");
+				mysqli_query($con,"update mtd set mtd_email='$changeemail' ");
 				header("Location: mtd_account.php?success=MTD email changed successfully.");
 				exit();
 			}			
@@ -39,10 +44,5 @@ include "../connection.php";
 	}
 ?>
 
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
+
 	

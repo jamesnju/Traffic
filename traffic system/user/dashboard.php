@@ -6,7 +6,25 @@
       header("Location: login.php");
       exit();
   }
+  // Fetch pending fine count
+  $pending_count_query = mysqli_query($con, "SELECT COUNT(*) FROM issued_fines WHERE issued_fines_license_id IN (SELECT issued_fines_license_id FROM issued_fines WHERE issued_fines_license_id=issued_fines_license_id) AND issued_fines_status='pending'");
+  $pending_count_row = mysqli_fetch_array($pending_count_query);
+  $pending_count = $pending_count_row[0];
 
+  // Fetch pending fine amount
+  $pending_amount_query = mysqli_query($con, "SELECT SUM(issued_fines_total_amount) FROM issued_fines WHERE issued_fines_license_id IN (SELECT issued_fines_license_id FROM issued_fines WHERE issued_fines_license_id=issued_fines_license_id) AND issued_fines_status='pending'");
+  $pending_amount_row = mysqli_fetch_array($pending_amount_query);
+  $pending_amount = $pending_amount_row[0];
+
+  // Fetch paid fine amount
+  $paid_amount_query = mysqli_query($con, "SELECT SUM(issued_fines_total_amount) FROM issued_fines WHERE issued_fines_license_id IN (SELECT issued_fines_license_id FROM issued_fines WHERE issued_fines_license_id=issued_fines_license_id) AND issued_fines_status='paid'");
+  $paid_amount_row = mysqli_fetch_array($paid_amount_query);
+  $paid_amount = $paid_amount_row[0];
+
+  // Fetch paid fine count
+  $paid_count_query = mysqli_query($con, "SELECT COUNT(*) FROM issued_fines WHERE issued_fines_license_id IN (SELECT issued_fines_license_id FROM issued_fines WHERE issued_fines_license_id=issued_fines_license_id) AND issued_fines_status='paid'");
+  $paid_count_row = mysqli_fetch_array($paid_count_query);
+  $paid_count = $paid_count_row[0];
 ?>
 
 
@@ -81,7 +99,7 @@
     <!-- Dashboard main content start here =================================================-->
     <div class="dashwrapper animated fadeIn">
         <div class="container-fluid">
-            <h6 class="mt-1 badge badge-pill badge-light tag-hover" style="padding: 10px; font-size: 0.75rem;">Account Holder : <a href="profile_details.php"><?php echo $_SESSION['license_id']; ?></a></h6>
+            <h6 class="mt-1 badge badge-pill badge-light tag-hover" style="padding: 10px; font-size: 0.75rem;">Account Holder : <a href="profile_details.php"><?php echo $_SESSION['registration_username']; ?></a></h6>
             <!--Main four count boxes start here-->
             <div class="row p-2">
                 <!--First count box start-->
@@ -90,16 +108,8 @@
                         <p>
                             <i class="fas fa-bullhorn"></i>
                         </p>
-                        <?php
-                            include "../connection.php";
-                            $license_id = $_SESSION['license_id'];
-                            $query = "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND issued_fines_status='pending' "; 
-                            $query_run = mysqli_query($conn, $query);
-
-                            $row = mysqli_num_rows($query_run);
-                            echo '<h3 class="counter">'.$row.'</h3>';
-                        ?>
-                        <p class="dashcount-name">Pending Fine Count</p>
+                        <h3 class="counter"><?php echo $pending_count; ?></h3>
+                        <p class="dashcount-name">Pending Fine Count </p>
                     </div>
                 </div>
                 <!--First count box end-->
@@ -109,15 +119,7 @@
                         <p>
                             <i class="fas fa-hourglass-half"></i>
                         </p>
-                        <?php
-                        include ("../connection.php");
-                        $license_id = $_SESSION['license_id'];
-                        $query = "SELECT SUM(issued_fines_total_amount) From issued_fines WHERE issued_fines_license_id='$license_id' AND issued_fines_status='pending'";
-                        $result = mysqli_query($conn,$query);
-                        $row = mysqli_fetch_array($result);
-                        $total = $row[0];
-                        echo '<h3 class="counter">'.$total.'</h3>';
-                        ?>     
+                        <h3 class="counter"><?php echo $pending_amount; ?></h3>    
                         <p class="dashcount-name">Pending Fine Amount (Ksh)</p>
                     </div>
                 </div>
@@ -128,15 +130,8 @@
                         <p>
                             <i class="fas fa-list-ol"></i>
                         </p>
-                        <?php
-                            include "../connection.php";
-                            $license_id = $_SESSION['license_id'];
-                            $query = "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND issued_fines_status='paid' "; 
-                            $query_run = mysqli_query($conn, $query);
+                        <h3 class="counter"><?php echo $paid_count; ?></h3>
 
-                            $row = mysqli_num_rows($query_run);
-                            echo '<h3 class="counter">'.$row.'</h3>';
-                        ?>
                         <p class="dashcount-name">Paid Fine Count</p>
                     </div>
                 </div>
@@ -147,15 +142,7 @@
                         <p>
                             <i class="fas fa-coins"></i>
                         </p>
-                        <?php
-                        include ("../connection.php");
-                        $license_id = $_SESSION['license_id'];
-                        $query = "SELECT SUM(issued_fines_total_amount) From issued_fines WHERE issued_fines_license_id='$license_id' AND issued_fines_status='paid'";
-                        $result = mysqli_query($conn,$query);
-                        $row = mysqli_fetch_array($result);
-                        $total = $row[0];
-                        echo '<h3 class="counter">'.$total.'</h3>';
-                        ?> 
+                        <h3 class="counter"><?php echo $paid_amount; ?></h3>
                         <p class="dashcount-name">Paid Fine Amount (Ksh)</p>
                     </div>
                 </div>
@@ -235,15 +222,15 @@
 
 <?php
     include ("../connection.php");
-    $license_id = $_SESSION['license_id'];
-    $result = mysqli_query($con,"SELECT SUM(issued_fines_total_amount) From issued_fines WHERE issued_fines_license_id='$license_id' AND issued_fines_status='pending'");
+    $registration_username = $_SESSION['registration_username'];
+    $result = mysqli_query($con,"SELECT SUM(issued_fines_total_amount) From issued_fines WHERE issued_fines_license_id='$registration_username' AND issued_fines_status='pending'");
     $row = mysqli_fetch_array($result);
     $totalPending = $row[0];
 ?>
 <?php
     include ("../connection.php");
-    $license_id = $_SESSION['license_id'];
-    $result = mysqli_query($con,"SELECT SUM(issued_fines_total_amount) From issued_fines WHERE issued_fines_license_id='$license_id' AND issued_fines_status='paid'");
+    $registration_username = $_SESSION['registration_username'];
+    $result = mysqli_query($con,"SELECT SUM(issued_fines_total_amount) From issued_fines WHERE issued_fines_license_id='$registration_username' AND issued_fines_status='paid'");
     $row = mysqli_fetch_array($result);
     $totalPaid = $row[0];
 ?>
@@ -285,11 +272,11 @@
 <!-- PHP Code goes here -->
 <?php
     include ("../connection.php");
-    $license_id = $_SESSION['license_id'];
-    $pendingcountQuery = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND issued_fines_status='pending'");
+    $registration_username = $_SESSION['registration_username'];
+    $pendingcountQuery = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$registration_username' AND issued_fines_status='pending'");
     $pendingCount = mysqli_num_rows($pendingcountQuery);
 
-    $paidcountQuery = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND issued_fines_status='paid'");
+    $paidcountQuery = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$registration_username' AND issued_fines_status='paid'");
     $paidCount = mysqli_num_rows($paidcountQuery);
 ?>
 <!-- PHP Code end here -->
@@ -330,43 +317,28 @@
 <!-- PHP Code goes here -->
 <?php
     include "../connection.php";
-    $license_id = $_SESSION['license_id'];
     $year = date("Y");
-    $jan = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 01 AND YEAR(issued_fines_issued_date) = '$year'");
-    $janVal = mysqli_num_rows($jan);
 
-    $feb = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 02 AND YEAR(issued_fines_date) = '$year'");
-    $febVal = mysqli_num_rows($feb);
+$months = array(
+    "january" => 1,
+    "february" => 2,
+    "march" => 3,
+    "april" => 4,
+    "may" => 5,
+    "june" => 6,
+    "july" => 7,
+    "august" => 8,
+    "september" => 9,
+    "october" => 10,
+    "november" => 11,
+    "december" => 12
+);
 
-    $march = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 03 AND YEAR(issued_fines_date) = '$year'");
-    $marchVal = mysqli_num_rows($march);
+foreach ($months as $monthName => $monthNumber) {
+    $query = "SELECT issued_fines_no FROM issued_fines WHERE MONTH(issued_fines_date) = $monthNumber AND YEAR(issued_fines_date) = '$year'";
+    ${$monthName . "Val"} = mysqli_num_rows(mysqli_query($con, $query));
+}
 
-    $april = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 04 AND YEAR(issued_fines_date) = '$year'");
-    $aprilVal = mysqli_num_rows($april);
-
-    $may = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 05 AND YEAR(issued_fines_date) = '$year'");
-    $mayVal = mysqli_num_rows($may);
-
-    $june = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 06 AND YEAR(issued_fines_date) = '$year'");
-    $juneVal = mysqli_num_rows($june);
-
-    $july = mysqli_query($con, "SELECT issued_fines__no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 07 AND YEAR(issued_fines_date) = '$year'");
-    $julyVal = mysqli_num_rows($july);
-
-    $august = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 08 AND YEAR(issued_fines_date) = '$year'");
-    $augustVal = mysqli_num_rows($august);
-
-    $september = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 09 AND YEAR(issued_fines_date) = '$year'");
-    $sepVal = mysqli_num_rows($september);
-
-    $october = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 10 AND YEAR(issued_fines_date) = '$year'");
-    $octVal = mysqli_num_rows($october);
-
-    $november = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 11 AND YEAR(issued_fines_date) = '$year'");
-    $novVal = mysqli_num_rows($november);
-
-    $december = mysqli_query($con, "SELECT issued_fines_no FROM issued_fines WHERE issued_fines_license_id='$license_id' AND MONTH(issued_fines_date) = 12 AND YEAR(issued_fines_date) = '$year'");
-    $decVal = mysqli_num_rows($december);
 ?>
 
 <!-- PHP Code end here -->
@@ -412,5 +384,3 @@
 });
 </script>
 <!-- 03.Chart => Pending fines and Paid fines amount================================== -->
-
-

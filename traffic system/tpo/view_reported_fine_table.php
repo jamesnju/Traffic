@@ -1,6 +1,10 @@
 <?php
-if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset($_SESSION['officer_name']) && isset($_SESSION['police_station'])) {
-
+    include("../connection.php");
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
 ?>
 
 <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -27,8 +31,8 @@ if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset(
     <tbody>
     <?php //Read officer details from tpo table
 		include "../connection.php";	
-        $police_id = $_SESSION['police_id'];	
-		$sql=mysqli_query($conn,"select * from issued_fines where issued_fines_police_id = '$police_id'");
+        $police_id = $_SESSION['registration_username'];	
+		$sql=mysqli_query($con,"select * from issued_fines where issued_fines_police_id = '$police_id'");
 		while($res=mysqli_fetch_assoc($sql))
 		{		
 		?>
@@ -45,9 +49,4 @@ if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset(
     </tbody>
 </table>
 
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
+

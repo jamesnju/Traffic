@@ -1,6 +1,12 @@
 <?php
-session_start();
-if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
+
 ?>
 
 
@@ -28,7 +34,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 	<?php
 	   include "../connection.php";
 	   $sql = "SELECT * FROM driver";
-	   $result = mysqli_query($conn, $sql);  		
+	   $result = mysqli_query($con, $sql);  		
    	?>
 
 
@@ -356,64 +362,35 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 		});
 	  
 	  /*Edit function*/  
-      $(document).on('click', '.edit_data', function(){  
-           var did = $(this).attr("id");  
-           $.ajax({  
-                url:"view_all_drivers_edit_modal_formdata",  
-                method:"POST",  
-                data:{did:did},  
-                dataType:"json",  
-                success:function(data){  
-                     $('#license_id').val(data.license_id);  
-                     $('#daddress').val(data.home_address);  
-                     $('#driver_email').val(data.driver_email);  
-                     $('#license_issue_date').val(data.license_issue_date);  
-                     $('#license_expire_date').val(data.license_expire_date);  
-                     $('#registered_date').val(data.registered_at);  
-                     $('#class_of_vehicle').val(data.class_of_vehicle);  
-                     $('#driver_name').val(data.driver_name);                      
-                       
-                     $('#did').val(data.license_id);  
-                     $('#insert').val("Update");  
-                     $('#add_data_Modal').modal('show');  
-                }  
-           });  
-      });  
-      $('#insert_form').on("submit", function(event){  
-           event.preventDefault();  
-           if($('#driver_email').val() == "")  
-           {  
-                alert("Email is required");  
-           }  
-           else if($('#daddress').val() == '')  
-           {  
-                alert("Address is required");  
-           }
-			else if($('#driver_name').val() == '')  
-           {  
-                alert("Driver Name is required");  
-           }           
-		   
-           else  
-           { 
-                $.ajax({  
-                     url:"view_all_drivers_edit_modal",  
-                     method:"POST",  
-                     data:$('#insert_form').serialize(),  
-                     beforeSend:function(){  
-                          $('#insert').val("Inserting");  
-                     },  
-                     success:function(data){  
-                          $('#insert_form')[0].reset();  
-                          $('#add_data_Modal').modal('hide');
-						  window.location = "./view_all_drivers.php?success=Driver details updated successfully";
-						  //alert("Record removed successfully");
-						  
-                          //$('#employee_table').html(data);  
-                     }  
-                });  
-           }  
-      }); 
+   /* Edit function */
+$(document).on('click', '.edit_data', function() {
+    var did = $(this).attr("id");
+    $.ajax({
+        url: "view_all_drivers_edit_modal_formdata.php", // Corrected the PHP file extension
+        method: "POST",
+        data: {did: did},
+        dataType: "json",
+        success: function(data) {
+            $('#license_id').val(data.license_id);
+            $('#daddress').val(data.home_address);
+            $('#driver_email').val(data.driver_email);
+            $('#license_issue_date').val(data.license_issue_date);
+            $('#license_expire_date').val(data.license_expire_date);
+            $('#registered_date').val(data.registered_at);
+            $('#class_of_vehicle').val(data.class_of_vehicle);
+            $('#driver_name').val(data.driver_name);
+
+            $('#did').val(data.license_id);
+            $('#insert').val("Update");
+            $('#add_data_Modal').modal('show');
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+            alert('Error occurred while fetching data for editing.');
+        }
+    });
+});
+ 
 		/*View function*/
 		$(document).ready(function(){        
 			$(document).on('click', '.view_data', function(){  
@@ -471,11 +448,5 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 
 </html>
 <?php
- mysqli_close($conn);
-?>
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
+ mysqli_close($con);
 ?>

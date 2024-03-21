@@ -4,9 +4,9 @@ session_start();
 
 
 if(isset($_POST['verifycode'])){
-    $OTPverify = mysqli_real_escape_string($conn, $_POST['verify']);
+    $OTPverify = mysqli_real_escape_string($con, $_POST['verify']);
     $verifyQuery = "SELECT * FROM mtd WHERE code = $OTPverify";
-    $runVerifyQuery = mysqli_query($conn, $verifyQuery);
+    $runVerifyQuery = mysqli_query($con, $verifyQuery);
 
     if(empty($OTPverify)){
         header("Location: verification-code.php?error=Verification code is required!");
@@ -15,7 +15,7 @@ if(isset($_POST['verifycode'])){
         if($runVerifyQuery){
             if(mysqli_num_rows($runVerifyQuery) > 0){
                 $newQuery = "UPDATE mtd SET code = 0";
-                $run = mysqli_query($conn,$newQuery);
+                $run = mysqli_query($con,$newQuery);
                 header("location: new-password.php");
             }else{
                 header("Location: verification-code.php?error=Invalid Verification code!");

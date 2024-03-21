@@ -95,7 +95,7 @@
 				<?php } ?>
                 <div class="card mb-4">
                     <div class="card-body p-lg-5">
-                    <form action="add_driver_action" method="POST">
+                    <form action="add_driver_action.php" method="POST">
                         
                         <div class="form-row">
                             <div class="form-group col-md-6">

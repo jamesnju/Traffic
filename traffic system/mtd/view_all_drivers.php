@@ -192,7 +192,7 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<form id="insert_form" method="POST">
+					<form id="insert_form" method="POST" action="view_all_drivers_edit_modal.php">
 						<div class="form-row">
 							<div class="form-group col-md-6">
 								<label for="license_id">License ID</label>
@@ -321,107 +321,71 @@
 		});
 	  
 	  /*Edit function*/  
-      $(document).on('click', '.edit_data', function(){  
-           var did = $(this).attr("id");  
-           $.ajax({  
-                url:"view_all_drivers_edit_modal_formdata",  
-                method:"POST",  
-                data:{did:did},  
-                dataType:"json",  
-                success:function(data){  
-                     $('#license_id').val(data.license_id);  
-                     $('#daddress').val(data.home_address);  
-                     $('#driver_email').val(data.driver_email);  
-                     $('#license_issue_date').val(data.license_issue_date);  
-                     $('#license_expire_date').val(data.license_expire_date);  
-                     $('#registered_date').val(data.registered_at);  
-                     $('#class_of_vehicle').val(data.class_of_vehicle);  
-                     $('#driver_name').val(data.driver_name);                      
-                       
-                     $('#did').val(data.license_id);  
-                     $('#insert').val("Update");  
-                     $('#add_data_Modal').modal('show');  
-                }  
-           });  
-      });  
-      $('#insert_form').on("submit", function(event){  
-           event.preventDefault();  
-           if($('#driver_email').val() == "")  
-           {  
-                alert("Email is required");  
-           }  
-           else if($('#daddress').val() == '')  
-           {  
-                alert("Address is required");  
-           }
-			else if($('#driver_name').val() == '')  
-           {  
-                alert("Driver Name is required");  
-           }           
-		   
-           else  
-           { 
-                $.ajax({  
-                     url:"view_all_drivers_edit_modal",  
-                     method:"POST",  
-                     data:$('#insert_form').serialize(),  
-                     beforeSend:function(){  
-                          $('#insert').val("Inserting");  
-                     },  
-                     success:function(data){  
-                          $('#insert_form')[0].reset();  
-                          $('#add_data_Modal').modal('hide');
-						  window.location = "./view_all_drivers.php?success=Driver details updated successfully";
-						  //alert("Record removed successfully");
-						  
-                          //$('#employee_table').html(data);  
-                     }  
-                });  
-           }  
-      }); 
-		/*View function*/
-		$(document).ready(function(){        
-			$(document).on('click', '.view_data', function(){  
-			   var did = $(this).attr("id");  
-			   if(did != '')  
-			   {  
-					$.ajax({  
-						 url:"view_all_drivers_view_modal",  
-						 method:"POST",  
-						 data:{did:did},  
-						 success:function(data){  
-							  $('#driver_detail').html(data);  
-							  $('#dataModal').modal('show');  
-						 }  
-					});  
-			   }            
-			});  
-		});  
-		
-		/*delete test sample*/
-		$(".delete_data").click(function(event){
-			event.preventDefault();
-        //var did = $(this).parents("tr").attr("id");
-		var did = $(this).attr("id");  
+      /*Delete function*/
+$(document).on('click', '.delete_data', function(){  
+    var did = $(this).attr("id");  
+    $('#deleteDriverDetails').modal('show');
+    $('#del_confirm').on('click', function() {
+        $.ajax({  
+            url:"view_all_drivers_delete_modal.php",  
+            method:"POST",  
+            data:{did:did},                
+            success:function(data){
+                $('#deleteDriverDetails').modal('hide');  
+                window.location = "./view_all_drivers.php?success=Driver deleted successfully";
+            }  
+        });   
+    });
+}); 
 
-		
-        if(confirm('Are you sure to remove this record ?'))
-        {
-            $.ajax({
-               url:"view_all_drivers_delete_modal",  
-               type: "POST",
-               data:{did:did},    
-               error: function() {				  
-                  alert('Something is wrong');
-               },
-               success: function(data) {
-                    //$("#"+did).delete_data();
-					//$('#employee_table').html(data);					
-					window.location = "./view_all_drivers.php?error=Record delete successfully from the system";                    
-               }
-            });
-        }
-    });	
+/*Edit function*/  
+$(document).on('click', '.edit_data', function(){  
+    var did = $(this).attr("id");  
+    $.ajax({  
+        url:"view_all_drivers_edit_modal_formdata.php",  
+        method:"POST",  
+        data:{did:did},  
+        dataType:"json",  
+        success:function(data){  
+            $('#license_id').val(data.license_id);  
+            $('#daddress').val(data.home_address);  
+            $('#driver_email').val(data.driver_email);  
+            $('#license_issue_date').val(data.license_issue_date);  
+            $('#license_expire_date').val(data.license_expire_date);  
+            $('#registered_date').val(data.registered_at);  
+            $('#class_of_vehicle').val(data.class_of_vehicle);  
+            $('#driver_name').val(data.driver_name);                      
+            $('#did').val(data.license_id);  
+            $('#insert').val("Update");  
+            $('#add_data_Modal').modal('show');  
+        }  
+    });  
+});  
+
+$('#insert_form').on("submit", function(event){  
+    event.preventDefault();  
+    if($('#driver_email').val() == "") {  
+        alert("Email is required");  
+    } else if($('#daddress').val() == '') {  
+        alert("Address is required");  
+    } else if($('#driver_name').val() == '') {  
+        alert("Driver Name is required");  
+    } else { 
+        $.ajax({  
+            url:"view_all_drivers_edit_modal.php",  
+            method:"POST",  
+            data:$('#insert_form').serialize(),  
+            beforeSend:function(){  
+                $('#insert').val("Inserting");  
+            },  
+            success:function(data){  
+                $('#insert_form')[0].reset();  
+                $('#add_data_Modal').modal('hide');
+                window.location = "./view_all_drivers.php?success=Driver details updated successfully";
+            }  
+        });  
+    }  
+});
 
 
 	//To close the success & error alert with slide up animation

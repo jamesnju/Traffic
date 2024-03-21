@@ -1,6 +1,9 @@
 <?php
-if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset($_SESSION['driver_name']) && isset($_SESSION['home_address'])) {
-?>
+ if (!isset($_SESSION['registration_username'])) {
+   // Redirect to the login page
+   header("Location: login.php");
+   exit();
+ }?>
 
 
 <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -23,7 +26,7 @@ if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset(
     <tbody>
 		<?php //get data from fine_tickets table
 		include "../connection.php";		
-		$sql=mysqli_query($conn,"select * from fine_tickets");
+		$sql=mysqli_query($con,"select * from fine_tickets");
 		while($res=mysqli_fetch_assoc($sql))
 		{		
 		?>
@@ -38,10 +41,5 @@ if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset(
 	</tbody>
 </table>
 
-<?php
-}else{ 
-	header("Location: login.php");
-	exit();
-}
-?>
+
 

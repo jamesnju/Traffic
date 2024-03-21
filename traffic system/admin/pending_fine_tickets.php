@@ -1,6 +1,12 @@
 <?php
-session_start();
-if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
+
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +33,7 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 	<?php
 	   include "../connection.php";
 	   $sql = "SELECT * FROM issued_fines WHERE issued_fines_status='pending'";
-	   $result = mysqli_query($conn, $sql);  		
+	   $result = mysqli_query($con, $sql);  		
    	?>
 
 
@@ -137,15 +143,15 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 									<div class="alert alert-success" id="success-alert">
 										<i class="fas fa-check-circle"></i>
 										<?php echo $_GET['success']; ?>
-  										<button type="button" class="close" data-dismiss="alert">&times;</button>
+  				                    <button type="button" class="close" data-dismiss="alert">&times;</button>
 									</div>
 								<?php } ?>								
 								<thead>
 									<tr>
 										<th>Action</th>										
 										<th>Reference No.</th>
-										<th>License ID</th>
 										<th>Police ID</th>
+										<th>License ID</th>
 										<th>Total Amount</th>
 									</tr>
 								</thead>
@@ -254,11 +260,5 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 
 </html>
 <?php
- mysqli_close($conn);
-?>
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
+ mysqli_close($con);
 ?>

@@ -5,7 +5,7 @@
       $output = '';  
       include "../connection.php";
       $query = "SELECT * FROM issued_fines WHERE issued_fines_no = '".$_POST["did"]."'";  
-      $result = mysqli_query($conn, $query);  
+      $result = mysqli_query($con, $query);  
       $output .= '  
         
            <table class="table table-borderless"> <tbody> ';  

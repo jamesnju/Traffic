@@ -1,7 +1,10 @@
 <?php
-
-if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset($_SESSION['officer_name']) && isset($_SESSION['police_station'])) {
-
+    include("../connection.php");
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
 ?>
 
 <div class="card mt-5 mb-4">
@@ -36,7 +39,7 @@ if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset(
                             {
 	                                $dlno=$_POST['licenseid'];
                                     include "../connection.php";
-                                    $sql=mysqli_query($conn,"SELECT * FROM issued_fines WHERE issued_fines_license_id = '$dlno'");
+                                    $sql=mysqli_query($con,"SELECT * FROM issued_fines WHERE issued_fines_license_id = '$dlno'");
                                     while($res=mysqli_fetch_assoc($sql))
                                     {
                                     ?>
@@ -56,10 +59,5 @@ if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset(
         </form>
     </div>
 </div>
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
+
 

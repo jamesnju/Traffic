@@ -24,11 +24,11 @@
       }
 	  
 	  
-	  if(mysqli_query($conn, $query))  
+	  if(mysqli_query($con, $query))  
       {  
            $output_del .= '<label class="alert alert-success">' . $message . '</label>';  
            $select_query = "SELECT * FROM driver";  
-           $result = mysqli_query($conn, $select_query);  
+           $result = mysqli_query($con, $select_query);  
            $output_del .= '  
                 <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">  
                      <tr>  

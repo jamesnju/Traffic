@@ -1,14 +1,17 @@
 <?php
-session_start();
-if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset($_SESSION['driver_name']) && isset($_SESSION['home_address'])) {
-?>
+ session_start();
+ if (!isset($_SESSION['registration_username'])) {
+   // Redirect to the login page
+   header("Location: login.php");
+   exit();
+ }?>
 
 <?php
  
  include("../connection.php");
  $owner= $_SESSION['license_id'];
  $sql = "SELECT * FROM driver WHERE driver_license_id = '$owner'";
- $res = mysqli_query($conn, $sql);
+ $res = mysqli_query($con, $sql);
  ?>
  
 <!DOCTYPE html>
@@ -179,10 +182,5 @@ if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset(
 </body>
 
 </html>
-<?php
-}else{ 
-	header("Location: login.php");
-	exit();
-}
-?>
+
 

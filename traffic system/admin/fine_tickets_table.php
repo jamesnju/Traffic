@@ -1,9 +1,13 @@
 <?php
-session_start();
-if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
+
 ?>
-
-
 
 
 <table class="table table-striped table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -48,9 +52,3 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 	</tbody>
 </table>
 
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>

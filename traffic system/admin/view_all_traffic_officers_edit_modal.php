@@ -5,12 +5,12 @@
 	  include "../connection.php";
       $output = '';  
       $message = '';  
-      $police_id = mysqli_real_escape_string($conn, $_POST["did"]);      
-	  $officer_email = mysqli_real_escape_string($conn, $_POST["officer_email"]);  
-	  $officer_name = mysqli_real_escape_string($conn, $_POST["officer_name"]);      
-      $police_station = mysqli_real_escape_string($conn, $_POST["police_station"]);
+      $police_id = mysqli_real_escape_string($con, $_POST["did"]);      
+	  $officer_email = mysqli_real_escape_string($con, $_POST["officer_email"]);  
+	  $officer_name = mysqli_real_escape_string($con, $_POST["officer_name"]);      
+      $police_station = mysqli_real_escape_string($con, $_POST["police_station"]);
      
-      $registered_at = mysqli_real_escape_string($conn, $_POST["registered_at"]);      
+      $registered_at = mysqli_real_escape_string($con, $_POST["registered_at"]);      
       
       if($_POST["did"] != '')  
       {  
@@ -35,7 +35,7 @@
            ";  
            $message = 'Data Inserted';  */
       }  
-      if(mysqli_query($conn, $query))  
+      if(mysqli_query($con, $query))  
       {  /*
            $output .= '<label class="alert alert-success">' . $message . '</label>';  
            $select_query = "SELECT * FROM tpo";  

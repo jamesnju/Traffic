@@ -1,6 +1,12 @@
 <?php
-session_start();
-if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset($_SESSION['driver_name']) && isset($_SESSION['home_address'])) {
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
+
 ?>
 
 
@@ -105,7 +111,7 @@ if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset(
                 <h4>Change your Email Address</h4>
                     <div class="form-row">
                         <div class="form-group col-md-9">
-                            <input type="email" class="form-control" id="change_email" placeholder="Type your new email here" value="<?php echo $_SESSION["driver_email"]; ?>" disabled>
+                            <input type="email" class="form-control" id="change_email" placeholder="Type your new email here" value="<?php echo $_SESSION["registration_email"]; ?>" disabled>
                         </div>
                         <!--<div class="form-group col-md-3">
                             <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save changes</button>
@@ -159,10 +165,5 @@ if (isset($_SESSION['license_id']) && isset($_SESSION['driver_email']) && isset(
 </body>
 
 </html>
-<?php
-}else{ 
-	header("Location: login.php");
-	exit();
-}
-?>
+
 

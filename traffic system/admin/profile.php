@@ -1,8 +1,12 @@
 <?php
-include "../connection.php";
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
 
-session_start();
-if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 ?>
 
 
@@ -193,9 +197,4 @@ if (isset($_SESSION['id']) && isset($_SESSION['admin_email'])) {
 </body>
 
 </html>
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
+

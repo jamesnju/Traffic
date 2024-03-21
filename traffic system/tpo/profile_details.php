@@ -1,7 +1,11 @@
 <?php
-session_start();
-if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset($_SESSION['officer_name']) && isset($_SESSION['police_station'])) {
-
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
 ?>
 <?php
  
@@ -164,10 +168,5 @@ $res = mysqli_query($conn, $sql);
 </body>
 
 </html>
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
+
 

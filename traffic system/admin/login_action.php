@@ -1,62 +1,39 @@
-<!--Login Action here--->
 <?php
+    include('../connection.php');
+    session_start();
 
-session_start();
-include "../connection.php";
+    if(isset($_POST['login'])){
+        $email = $_POST['registration_email']; 
+        $password = $_POST['registration_password'];
 
-if (isset($_POST['admin_email']) && isset($_POST['admin_password'])) {
+        $fetch_query = "SELECT * FROM `registration` WHERE registration_email='$email'";
+        $result_query = mysqli_query($con, $fetch_query);
+        $row_count = mysqli_num_rows($result_query);
 
-	function validate($data){
-		$data = trim($data);
-		$data = stripcslashes($data);
-		$data = htmlspecialchars($data);
-		return $data;
-	}
+        if($row_count > 0){
+            $data = mysqli_fetch_assoc($result_query);
+            $_SESSION['registration_username'] = $data['registration_username'];
+            if(password_verify($password, $data['registration_password'])){
+                if ($data['registration_role'] == 'admin') {
+                    // Redirect admin to admin page
+                    header("Location: dashboard.php");
+                    // echo "<script>window.open('../admin/index.php','_self')</script>";
+                } else if($data['registration_role']=='mtd'){
+                    // Redirect student to student page
+                    header("Location: ../mtd/dashboard.php");
+                    // echo "<script>window.open('../student/index.php','_self')</script>";
+                } else if($data['registration_role']=='driver'){
+                    // Redirect other users to general user page
+                    header("Location: ../user/dashboard.php");
 
-	$admin_email = validate($_POST['admin_email']);
-	$admin_password = validate($_POST['admin_password']);
-
-	if (empty($admin_email)) {
-		header("Location: index.php?error=Email is required");
-		exit();
-	}else if (empty($admin_password)) {
-		header("Location: index.php?error=Password is required");
-		exit();
-		
-	}else{
-
-		$admin_password = md5($admin_password);
-
-		$sql = "SELECT * FROM registration WHERE registration_username='$admin_email' AND user_password='$admin_password'";
-
-		$result = mysqli_query($conn, $sql);
-
-		if (mysqli_num_rows($result) === 1) {
-			$row = mysqli_fetch_assoc($result);
-			if ($row['user_name'] === $admin_email && $row['user_password'] === $admin_password) {
-				$_SESSION['admin_email'] = $row['user_name'];
-				$_SESSION['admin_name'] = $row['user_name'];
-				$_SESSION['id'] = $row['user_id'];
-				header("Location: dashboard.php");
-				exit();
-				
-			}else{
-				header("Location: index.php?error= Incorrect Email or Password!");
-				exit();
-			}
-
-		}else{
-			header("Location: index.php?error= Incorrect Email or Password!");
-			exit();
-		}
-	}
-
-
-}else{
-	header("Location: index.php");
-	exit();
-}
-
-
-
+                    // echo "<script>window.open('../index.php','_self')</script>";
+                }
+            }
+            else{
+                echo "<script>alert('Wrong email or password')</script>";
+            }
+        } else {
+            echo "<script>alert('User not found')</script>";
+        }
+    }
 ?>

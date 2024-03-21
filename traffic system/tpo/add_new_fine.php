@@ -2,7 +2,7 @@
 <?php
 include "../connection.php";
 $query= "SELECT * FROM fine_tickets";
-	$result_set = mysqli_query($conn, $query);
+	$result_set = mysqli_query($con, $query);
 
 	$province_list = "";
 	while ( $result = mysqli_fetch_assoc($result_set) ) {
@@ -13,35 +13,43 @@ $query= "SELECT * FROM fine_tickets";
 <?php
 
 
-session_start();
-if (isset($_SESSION['police_id']) && isset($_SESSION['officer_email']) && isset($_SESSION['officer_name']) && isset($_SESSION['police_station'])) {
-include "../connection.php";
-error_reporting(0);
+    include("../connection.php");
+    session_start();
+    if (!isset($_SESSION['registration_username'])) {
+      // Redirect to the login page
+      header("Location: index.php");
+      exit();
+  }
 
 //------------------------------------------------Search function goes here -------------------------------------------------------------
-if (isset($_POST['search']))
-{
-	$dlno=$_POST['licenseid'];
-		
-	if(empty($dlno)){
+$res = []; // Initialize $res as an empty array
+
+// Check if the search form was submitted
+if (isset($_POST['search'])) {
+    // Retrieve the license ID from the form
+    $dlno = mysqli_real_escape_string($con, $_POST['licenseid']); // Escape the input to prevent SQL injection
+
+    // Check if the license ID is empty
+    if (empty($dlno)) {
         header("Location: add_new_fine.php?error=License ID search required!");
         exit();
+    } else {
+        // Perform the database query to retrieve driver details
+        $sql = "SELECT * FROM driver WHERE driver_license_id='$dlno'";
+        $result = mysqli_query($con, $sql);
+
+        // Check if the query was successful and if any rows were returned
+        if ($result && mysqli_num_rows($result) > 0) {
+            // Fetch the driver details
+            $res = mysqli_fetch_assoc($result);
+        } else {
+            // Redirect with an error message if no matching driver was found
+            header("Location: add_new_fine.php?error=Invalid License ID!");
+            exit();
+        }
     }
-    else{
-        $sql=mysqli_query($conn,"select * from driver where driver_license_id='$dlno'");
-		
-		if(mysqli_num_rows($sql))
-		{
-		$res=mysqli_fetch_assoc($sql);
-		
-		}
-		else
-		{
-            header("Location: add_new_fine.php?error= Invalid License ID!");
-			exit();
-		} 
-    }	
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------issue fine code goes here ---------------------------------------------------------------
@@ -65,7 +73,7 @@ if (isset($_POST['search']))
     $place = $_POST['place'];
     $vehicleno = $_POST['vehicleno'];
     $provisions = $_POST['provisions'];
-    $fineamount = $_POST['district'];
+    $fineamount = isset($_POST['district']) ? $_POST['district'] : '';
 
     $user_data = 'license='. $license. '&drivername='. $drivername. '&homeaddress='. $homeaddress. '&classofvehicle='. $classofvehicle. '&place='. $place ;
 	
@@ -85,7 +93,7 @@ if (isset($_POST['search']))
         exit();
     }
     else if(empty($place)){
-        header("Location: add_new_fine.php?error=Place is required!&$user_data");
+        header("Location: add_new_fine.php?error=Please+Search+Licence+ID&" . urlencode($user_data));
         exit();
     }
     else if(empty($vehicleno)){
@@ -111,9 +119,12 @@ if (isset($_POST['search']))
         //  echo $courtdate."<br>";
 
         include "../connection.php";
-		$sql2 = "INSERT INTO issued_fines(issued_fines_police_id, issued_fines_license_id, issued_fines_vehicle_no, issued_fines_class_of_vehicle, issued_fines_place, issued_fines_date, issued_fines_time, issued_fines_expire_date, issued_fines_provisions, issued_fines_total_amount, issued_fines_status, issued_fines_paid_date)VALUES
+		$sql2 = "INSERT INTO issued_fines(issued_fines_police_id, issued_fines_license_id, issued_fines_vehicle_no, 
+        issued_fines_class_of_vehicle, issued_fines_place, issued_fines_date, issued_fines_time, issued_fines_expire_date,
+        issued_fines_provisions, issued_fines_total_amount, issued_fines_status, issued_fines_paid_date)
+        VALUES
         ('$policeid', '$license', '$vehicleno', '$classofvehicle', '$place', '$issuedate', '$issuetime', '$expiredate', '$provisions', '$fineamount', 'pending', NOW())";
-		$result2 = mysqli_query($conn, $sql2);
+		$result2 = mysqli_query($con, $sql2);
 		if ($result2) {
 			header("Location: add_new_fine.php?success=Added Successfully");
 			exit();
@@ -246,28 +257,28 @@ if (isset($_POST['search']))
 
                 <h3 class="mt-4">Driver Details</h3>
                 <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="driver_name">Licence ID</label>
-                        <input type="text" class="form-control" id="driver_name"  value="<?php echo $res['driver_license_id']?>" name="licensed" placeholder="Licence ID" disabled>
-                        <input type="hidden" class="form-control" id="driver_name"  value="<?php echo $res['driver_license_id']?>" name="license" placeholder="Licence ID">
-                    </div>
+                <div class="form-group col-md-6">
+                    <label for="driver_name">Licence ID</label>
+                    <input type="text" class="form-control" id="driver_name" value="<?php echo isset($res['driver_license_id']) ? $res['driver_license_id'] : ''; ?>" name="licensed" placeholder="Licence ID" disabled>
+                    <input type="hidden" class="form-control" id="driver_name" value="<?php echo isset($res['driver_license_id']) ? $res['driver_license_id'] : ''; ?>" name="license" placeholder="Licence ID">
+                </div>
                     <div class="form-group col-md-6">
                         <label for="home_address">Driver Full Name</label>
-                        <input type="text" class="form-control" id="home_address" value="<?php echo $res['driver_name']; ?>" name="drivernamed"  placeholder="Driver Full Name" disabled>
-                        <input type="hidden" class="form-control" id="home_address" value="<?php echo $res['driver_name']; ?>" name="drivername"  placeholder="Driver Full Name" >
+                        <input type="text" class="form-control" id="home_address" value="<?php echo isset($res['driver_name']) ? $res['driver_name'] : ''; ?>" name="drivernamed" placeholder="Driver Full Name" disabled>
+                        <input type="hidden" class="form-control" id="home_address" value="<?php echo isset($res['driver_name']) ? $res['driver_name'] : ''; ?>" name="drivername" placeholder="Driver Full Name">
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="class_of_vehicle">Driver Address</label>
-                        <input type="text" class="form-control" id="class_of_vehicle" value="<?php echo $res['driver_home_address']; ?>" name="homeaddressd"  placeholder="Driver Address" disabled>
-                        <input type="hidden" class="form-control" id="class_of_vehicle" value="<?php echo $res['driver_home_address']; ?>" name="homeaddress"  placeholder="Driver Address">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="home_address">Class of Vehicle</label>
-                        <input type="text" class="form-control" id="home_address" value="<?php echo $res['driver_class_of_vehicle']; ?>" name="classofvehicled"  placeholder="Example: A1, A, B1, B, C1, C,...etc" disabled>
-                        <input type="hidden" class="form-control" id="home_address" value="<?php echo $res['driver_class_of_vehicle']; ?>" name="classofvehicle"  placeholder="Example: A1, A, B1, B, C1, C,...etc">
-                    </div>
+                <div class="form-group col-md-6">
+                    <label for="class_of_vehicle">Driver Address</label>
+                    <input type="text" class="form-control" id="class_of_vehicle" value="<?php echo isset($res['driver_home_address']) ? $res['driver_home_address'] : ''; ?>" name="homeaddressd" placeholder="Driver Address" disabled>
+                    <input type="hidden" class="form-control" id="class_of_vehicle" value="<?php echo isset($res['driver_home_address']) ? $res['driver_home_address'] : ''; ?>" name="homeaddress" placeholder="Driver Address">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="home_address">Class of Vehicle</label>
+                    <input type="text" class="form-control" id="home_address" value="<?php echo isset($res['driver_class_of_vehicle']) ? $res['driver_class_of_vehicle'] : ''; ?>" name="classofvehicled" placeholder="Example: A1, A, B1, B, C1, C,...etc" disabled>
+                    <input type="hidden" class="form-control" id="home_address" value="<?php echo isset($res['driver_class_of_vehicle']) ? $res['driver_class_of_vehicle'] : ''; ?>" name="classofvehicle" placeholder="Example: A1, A, B1, B, C1, C,...etc">
+                </div>
                 </div>
 
 
@@ -275,20 +286,20 @@ if (isset($_POST['search']))
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="officer_id">Police Officer ID</label>
-                        <input type="text" class="form-control" value="<?php echo $_SESSION["police_id"]; ?>" id="officer_id" name="policeidd" placeholder="Police Officer ID" disabled>
-                        <input type="hidden" class="form-control" value="<?php echo $_SESSION["police_id"]; ?>" id="officer_id" name="policeid" placeholder="Police Officer ID">
+                        <input type="text" class="form-control" value="<?php echo $_SESSION['registration_username']; ?>" id="officer_id" name="policeidd" placeholder="Police Officer ID" >
+                        <input type="hidden" class="form-control" value="<?php echo $_SESSION['registration_username']; ?>" id="officer_id" name="policeid" placeholder="Police Officer ID">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="officer_name">Police Officer Name</label>
-                        <input type="text" class="form-control" id="officer_name" value="<?php echo $_SESSION["officer_name"]; ?>" name="officernamed" placeholder="Police Officer Name" disabled>
-                        <input type="hidden" class="form-control" id="officer_name" value="<?php echo $_SESSION["officer_name"]; ?>" name="officername" placeholder="Police Officer Name">
+                        <input type="text" class="form-control" id="officer_name" value="<?php echo $_SESSION['registration_username']; ?>" name="officernamed" placeholder="Police Officer Name" >
+                        <input type="hidden" class="form-control" id="officer_name" value="<?php echo $_SESSION['registration_username']; ?>" name="officername" placeholder="Police Officer Name">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="police_station">Police Station</label>
-                        <input type="text" class="form-control" id="police_station" value="<?php echo $_SESSION["police_station"]; ?>" name="policestationd" placeholder="Police Station" disabled>
-                        <input type="hidden" class="form-control" id="police_station" value="<?php echo $_SESSION["police_station"]; ?>" name="policestation" placeholder="Police Station">
+                        <input type="text" class="form-control" id="police_station" value="<?php echo $_SESSION['registration_username']; ?>" name="policestationd" placeholder="Police Station">
+                        <input type="hidden" class="form-control" id="police_station" value="<?php echo $_SESSION['registration_username']; ?>" name="policestation" placeholder="Police Station">
                     </div>
                     
                 </div>
@@ -330,15 +341,17 @@ if (isset($_POST['search']))
                             <label for="province">Select Provision</label>
                             <select class="form-control custom-select" name="province" id="province" onchange="fineselect();">
                             <option>Please Select Provision</option>
-				                <?php echo $province_list; ?>
+				            <?php echo $province_list; ?>
                             </select>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="district">Total Fine Amount</label>
-                            <select class="form-control custom-select" name="district" id="district">
-                            <option>Amount</option>
-				               
-                            </select>
+                            <input type="number" name="district" class="form-control custom-select" id="district">
+                            <!-- <select class="form-control custom-select" name="district" id="district">
+                                <option>Amount</option>
+                                <?//php echo $fineamount;?>
+				            
+                            </select> -->
                         </div>
                     </div>
                     <div class="form-row">
@@ -404,6 +417,8 @@ if (isset($_POST['search']))
 		
 	</script>
     <script>
+    	//To close
+
     	//To close the success & error alert with slide up animation
 	$("#success-alert").delay(4000).fadeTo(2000, 500).slideUp(1000, function(){
     	$("#success-alert").slideUp(1000);
@@ -413,9 +428,4 @@ if (isset($_POST['search']))
 </body>
 
 </html>
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
+

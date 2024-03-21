@@ -1,9 +1,9 @@
 <?php
-include "../connection.php";
-
-session_start();
-if (isset($_SESSION['mtd_id']) && isset($_SESSION['mtd_email'])) {
-?>
+ if (!isset($_SESSION['registration_username'])) {
+   // Redirect to the login page
+   header("Location: index.php");
+   exit();
+ }?>
 
 
 <!DOCTYPE html>
@@ -146,9 +146,4 @@ if (isset($_SESSION['mtd_id']) && isset($_SESSION['mtd_email'])) {
 </body>
 
 </html>
-<?php
-}else{ 
-	header("Location: index.php");
-	exit();
-}
-?>
+
